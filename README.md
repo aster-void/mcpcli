@@ -1,6 +1,6 @@
-# MCP Console
+# climcp
 
-Speak MCP without writing glue code. `mcp-console` spins up your MCP server command, handshakes via `@modelcontextprotocol/sdk`, then lets you run tools interactively or in a one-shot flow.
+Speak MCP without writing glue code. `climcp` spins up your MCP server command, handshakes via `@modelcontextprotocol/sdk`, then lets you run tools interactively or in a one-shot flow.
 
 ## Why
 
@@ -11,17 +11,17 @@ Speak MCP without writing glue code. `mcp-console` spins up your MCP server comm
 ## Install
 
 ```sh
-bun add -g mcp-console
+bun add -g climcp
 # or
-npm install -g mcp-console
+npm install -g climcp
 ```
 
 Requires Node.js 22+ and bun (for development).
 
 ## Commands
 
-- `mcp-console connect <command...>` — start the MCP server process, handshake, drop into an interactive prompt.
-- `mcp-console run "tool" <command...>` — start the server, call one tool once with JSON from stdin, exit.
+- `climcp connect <command...>` — start the MCP server process, handshake, drop into an interactive prompt.
+- `climcp run "tool" <command...>` — start the server, call one tool once with JSON from stdin, exit.
 
 ### Connect
 
@@ -34,7 +34,7 @@ Requires Node.js 22+ and bun (for development).
 Example:
 
 ```sh
-$ mcp-console connect node examples/server.js
+$ climcp connect node examples/server.js
 echo: Echos content
 > echo {"text":"hello"}
 result: {"text":"hello"}
@@ -46,7 +46,7 @@ result: {"text":"hello"}
 One-shot execution; args come from stdin:
 
 ```sh
-echo '{"text":"hi"}' | mcp-console run "echo" node examples/server.js
+echo '{"text":"hi"}' | climcp run "echo" node examples/server.js
 ```
 
 Success prints JSON to stdout; any failure writes to stderr and exits non-zero.

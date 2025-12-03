@@ -4,7 +4,7 @@ Guidelines for agents working on this repository. Avoid destructive operations a
 
 ## Project Overview
 
-- MCP Console built with bun. `mcp-console connect <command...>` starts and interacts with a server, `mcp-console run "tool" <command...>` executes once.
+- climcp built with bun. `climcp connect <command...>` starts and interacts with a server, `climcp run "tool" <command...>` executes once.
 - Exit codes follow the policy described in README, clearly separating user errors from connection-related errors.
 
 ## Directory Structure (directories only)

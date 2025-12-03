@@ -5,7 +5,7 @@ import { handleRun } from "./cmd/run.js";
 
 const program = new Command();
 program
-	.name("mcp-console")
+	.name("climcp")
 	.description("Simple MCP connector CLI")
 	.configureOutput({
 		outputError: (str, write) => write(str),

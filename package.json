@@ -1,5 +1,5 @@
 {
-  "name": "mcp-console",
+  "name": "climcp",
   "version": "0.0.1",
   "description": "CLI for communicating with MCPs.",
   "type": "module",
@@ -11,7 +11,7 @@
     "test:interactive": "bun run build && bun scripts/test-cli-interactive.ts"
   },
   "bin": {
-    "mcp-console": "dist/index.js"
+    "climcp": "dist/index.js"
   },
   "keywords": [],
   "author": "",
