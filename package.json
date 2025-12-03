@@ -7,7 +7,7 @@
   "scripts": {
     "build": "tsc",
     "prepare": "pnpm run build",
-    "test": "pnpm run build && bash scripts/test-cli.sh && bun scripts/test-cli-interactive.ts",
+    "test": "pnpm run build && bun test && bash scripts/test-cli.sh && bun scripts/test-cli-interactive.ts",
     "test:interactive": "pnpm run build && bun scripts/test-cli-interactive.ts"
   },
   "bin": {
@@ -24,6 +24,7 @@
     "valibot": "^1.2.0"
   },
   "devDependencies": {
+    "@modelcontextprotocol/server-filesystem": "^2025.11.25",
     "@types/node": "^24.10.1",
     "lefthook": "^2.0.7",
     "prettier": "^3.7.4",

@@ -6,6 +6,7 @@ import {
 	type StdioServerParameters,
 } from "@modelcontextprotocol/sdk/client/stdio.js";
 import { EXIT_CONNECT, EXIT_USAGE } from "./constants.js";
+import { toTSStyle, type JsonSchema } from "./lib/json-schema.js";
 import pkg from "../package.json" with { type: "json" };
 
 export type ToolInfo = Pick<Tool, "name" | "description" | "inputSchema">;
@@ -60,9 +61,9 @@ export async function listTools(client: Client): Promise<ToolInfo[]> {
 	tools.forEach((tool) => {
 		const desc = tool.description ? `: ${tool.description}` : "";
 		console.log(`- ${tool.name}${desc}`);
-		const schemaLines = JSON.stringify(tool.inputSchema, null, 2).split("\n");
+		const tsStyle = toTSStyle(tool.inputSchema as JsonSchema, 1);
 		console.log("  expected schema:");
-		schemaLines.forEach((line) => console.log(`    ${line}`));
+		tsStyle.split("\n").forEach((line) => console.log(`    ${line}`));
 	});
 	return tools.map((tool) => ({
 		name: tool.name,
