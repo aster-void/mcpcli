@@ -1,5 +1,6 @@
 import process from "node:process";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
+import { type Tool } from "@modelcontextprotocol/sdk/spec.types.js";
 import {
 	StdioClientTransport,
 	type StdioServerParameters,
@@ -7,10 +8,7 @@ import {
 import { EXIT_CONNECT, EXIT_USAGE } from "./constants.js";
 import pkg from "../package.json" with { type: "json" };
 
-export type ToolInfo = {
-	name: string;
-	description?: string;
-};
+export type ToolInfo = Pick<Tool, "name" | "description" | "inputSchema">;
 
 export function buildTransport(commandArgs: string[]) {
 	if (!commandArgs || commandArgs.length === 0) {
@@ -62,8 +60,15 @@ export async function listTools(client: Client): Promise<ToolInfo[]> {
 	tools.forEach((tool) => {
 		const desc = tool.description ? `: ${tool.description}` : "";
 		console.log(`- ${tool.name}${desc}`);
+		const schemaLines = JSON.stringify(tool.inputSchema, null, 2).split("\n");
+		console.log("  expected schema:");
+		schemaLines.forEach((line) => console.log(`    ${line}`));
 	});
-	return tools.map((t) => ({ name: t.name, description: t.description }));
+	return tools.map((tool) => ({
+		name: tool.name,
+		description: tool.description,
+		inputSchema: tool.inputSchema,
+	}));
 }
 
 export function printCallResult(result: unknown) {

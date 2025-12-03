@@ -25,9 +25,9 @@ Requires Node.js 22+ and pnpm (for development).
 
 ### Connect
 
-- On handshake success, lists exposed tools automatically.
+- On handshake success, lists exposed tools automatically (name, description, expected schema).
 - Prompt:
-  - `\t` — list tools (name, description).
+  - `\t` — list tools (name, description, expected schema).
   - `<toolName> <json>` — call a tool with one-line JSON args; parse failure exits with error.
   - `\q` / `Ctrl+C` / `Ctrl+D` — quit and stop the server process.
 

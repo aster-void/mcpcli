@@ -1,38 +1,38 @@
 # AGENTS.md
 
-このリポジトリで作業するエージェント向けの指針。破壊的操作や挙動の曖昧さを避け、明示的な失敗とシンプルな手順を優先する。
+Guidelines for agents working on this repository. Avoid destructive operations and behavioral ambiguity, prioritize explicit failures and simple procedures.
 
-## プロジェクト概要
+## Project Overview
 
-- Node.js + pnpm 製の MCP CLI。`mcpcli connect <command...>` でサーバーを起動し対話、`mcpcli run "tool" <command...>` で 1 回実行。
-- 終了コードは README 記載のポリシーに従い、利用者エラーと接続系エラーを明確に分ける。
+- MCP CLI built with Node.js + pnpm. `mcpcli connect <command...>` starts and interacts with a server, `mcpcli run "tool" <command...>` executes once.
+- Exit codes follow the policy described in README, clearly separating user errors from connection-related errors.
 
-## ディレクトリ構成（ディレクトリのみ）
+## Directory Structure (directories only)
 
 ```
 .
-├─ src/      # TypeScript 実装
-├─ dist/     # ビルド済み JS 出力
-├─ bin/      # CLI ラッパー配置想定
-├─ scripts/  # 開発・検証用スクリプト
-└─ nix/      # devshell など Nix 設定
+├─ src/      # TypeScript implementation
+├─ dist/     # Built JS output
+├─ bin/      # CLI wrapper placement
+├─ scripts/  # Development/verification scripts
+└─ nix/      # devshell and other Nix configs
 ```
 
-## 最優先原則
+## Top Priority Principles
 
-- 失敗は明示する: エラーを握りつぶさない。`|| true` で黙殺しない。`if pkgs ? foo` での握りつぶしを避ける。
-- 作業前にプランを立てる: 調査 → プラン提示 → 承認の順で進める。
-- 破壊的操作前の確認: y/n で承認を得てから実行する（ユーザー指示に `--yes` がある場合のみ例外）。
-- 一度に 1 原因だけ修正: 原因を特定し、1 件ずつ解消して再実行する。
-- 迂回しない: 最初の計画が失敗したら次の計画を提示し、確認を取ってから動く。
+- Make failures explicit: Don't suppress errors. Don't silence with `|| true`. Avoid suppression with `if pkgs ? foo`.
+- Plan before working: Proceed in order: investigation → plan presentation → approval.
+- Confirm before destructive operations: Obtain y/n approval before execution (exception only when user instruction contains `--yes`).
+- Fix one cause at a time: Identify the cause, resolve one issue at a time, and re-execute.
+- Don't detour: If the initial plan fails, present the next plan and obtain confirmation before proceeding.
 
-## 基本フロー
+## Basic Flow
 
-1. ビルドまたは動作確認
-2. バグの原因を探し、修正
-3. ビルドまたは動作確認
+1. Build or operational verification
+2. Find the bug cause and fix it
+3. Build or operational verification
 
-## 開発コマンド
+## Development Commands
 
 ```sh
 pnpm install
@@ -40,17 +40,17 @@ pnpm run build
 pnpm test
 ```
 
-## Nix / Flake 注意
+## Nix / Flake Notes
 
-- 新規ファイルは `git add -N path` しないと flake から見えない場合がある。例: `git add packages/foo.nix -N` の上で `nix run .#foo` を行う。
+- New files may not be visible to flake without `git add -N path`. Example: do `git add packages/foo.nix -N` before `nix run .#foo`.
 
-## コーディング/変更方針
+## Coding/Change Policy
 
-- コードは自己説明的に、必要最小限のコメントのみ。
-- 暗黙のデフォルトより明示的な引数・エラー処理を優先。
-- 既存の挙動・終了コードポリシーを崩さないこと。
+- Code should be self-explanatory, with only minimal necessary comments.
+- Prioritize explicit arguments and error handling over implicit defaults.
+- Don't break existing behavior or exit code policies.
 
-## リポジトリ固有コーディング指針
+## Repository-Specific Coding Guidelines
 
-- src/index.ts はミニマルに保つ。
-- `as` と `any`は絶対に許可されない。やったらマジでしばかれるから気をつけて
+- Keep src/index.ts minimal.
+- `as` and `any` are absolutely forbidden. Seriously, you'll get in trouble if you use them.
