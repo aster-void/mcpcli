@@ -11,12 +11,12 @@ Speak MCP without writing glue code. `mcpcli` spins up your MCP server command, 
 ## Install
 
 ```sh
-pnpm add -g mcpcli
+bun add -g mcpcli
 # or
 npm install -g mcpcli
 ```
 
-Requires Node.js 22+ and pnpm (for development).
+Requires Node.js 22+ and bun (for development).
 
 ## Commands
 
