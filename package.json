@@ -1,0 +1,32 @@
+{
+  "name": "mcpcli",
+  "version": "0.0.1",
+  "description": "CLI for communicating with MCPs.",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "prepare": "pnpm run build",
+    "test": "pnpm run build && bash scripts/test-cli.sh && bun scripts/test-cli-interactive.ts",
+    "test:interactive": "pnpm run build && bun scripts/test-cli-interactive.ts"
+  },
+  "bin": {
+    "mcpcli": "dist/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.24.0",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.24.2",
+    "commander": "^14.0.2",
+    "json5": "^2.2.3",
+    "valibot": "^1.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.1",
+    "lefthook": "^2.0.7",
+    "prettier": "^3.7.4",
+    "typescript": "^5.9.3"
+  }
+}

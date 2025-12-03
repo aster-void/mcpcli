@@ -1,0 +1,8 @@
+# node modules
+node_modules
+dist
+.bun_tmp
+
+# dev tools
+.kiri
+.direnv
