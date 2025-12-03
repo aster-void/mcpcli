@@ -5,8 +5,7 @@
   "type": "module",
   "main": "dist/index.js",
   "scripts": {
-    "build": "bun build src/index.ts --outdir dist --target node && mv assets/* dist/",
-    "prepare": "bun run build",
+    "build": "bun build src/index.ts --outdir dist --target node && cp assets/* dist/",
     "test": "bun run build && bun test && bash scripts/test-cli.sh && bun scripts/test-cli-interactive.ts",
     "test:interactive": "bun run build && bun scripts/test-cli-interactive.ts"
   },
