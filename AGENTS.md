@@ -4,7 +4,7 @@ Guidelines for agents working on this repository. Avoid destructive operations a
 
 ## Project Overview
 
-- MCP CLI built with Node.js + pnpm. `mcpcli connect <command...>` starts and interacts with a server, `mcpcli run "tool" <command...>` executes once.
+- MCP CLI built with bun. `mcpcli connect <command...>` starts and interacts with a server, `mcpcli run "tool" <command...>` executes once.
 - Exit codes follow the policy described in README, clearly separating user errors from connection-related errors.
 
 ## Directory Structure (directories only)
@@ -35,9 +35,9 @@ Guidelines for agents working on this repository. Avoid destructive operations a
 ## Development Commands
 
 ```sh
-pnpm install
-pnpm run build
-pnpm test
+bun install
+bun run build
+bun test
 ```
 
 ## Nix / Flake Notes

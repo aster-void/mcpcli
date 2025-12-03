@@ -2,6 +2,6 @@ pre-commit:
   commands:
     prettier:
       glob: "*.{ts,tsx,js,jsx,cjs,mjs,cts,mts,json,md}"
-      run: pnpm exec prettier --check --ignore-unknown {staged_files}
+      run: bun prettier --write {staged_files}
     test:
-      run: pnpm test
+      run: bun run test
