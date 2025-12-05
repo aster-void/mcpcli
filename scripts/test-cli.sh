@@ -4,7 +4,7 @@ set -euo pipefail
 CLI="bun src/index.ts"
 SERVER="bun node_modules/.bin/mcp-server-filesystem"
 
-out="$($CLI run "$SERVER /tmp" list_allowed_directories)"
+out="$($CLI run "$SERVER /tmp" list_allowed_directories </dev/null)"
 if ! echo "$out" | grep -q "Allowed directories"; then
   echo "Expected output to contain 'Allowed directories'"
   exit 1
