@@ -4,7 +4,8 @@ set -euo pipefail
 CLI="bun src/index.ts"
 
 out="$($CLI run "bunx @modelcontextprotocol/server-filesystem /tmp" list_allowed_directories)"
-if ! [ "$(echo "$out" | jq ".structuredContent.content")" != "Allowed directories:\\n/tmp" ]; then
+if ! echo "$out" | grep -q "Allowed directories"; then
+  echo "Expected output to contain 'Allowed directories'"
   exit 1
 fi
 

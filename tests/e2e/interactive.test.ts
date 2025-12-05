@@ -60,7 +60,7 @@ test("connect lists tools", async () => {
     ["/q\n"],
   );
   expect(
-    result.stdout.includes("[read_file]") ||
+    result.stdout.includes("read_file") ||
       result.stdout.includes("Allowed directories"),
   ).toBe(true);
 });

@@ -6,8 +6,9 @@ const SERVER = "bunx @modelcontextprotocol/server-filesystem .";
 test("run without tool lists tools", async () => {
   const result = await $`bun src/index.ts run ${SERVER}`.quiet().nothrow();
   expect(result.exitCode).toBe(0);
-  expect(result.stdout.toString()).toContain("[list_directory]");
-  expect(result.stdout.toString()).toContain("[read_file]");
+  const stdout = result.stdout.toString();
+  expect(stdout).toContain("list_directory");
+  expect(stdout).toContain("read_file");
 });
 
 test("run with query-style args", async () => {

@@ -68,7 +68,7 @@ export async function handleRun(
       name: toolName,
       arguments: payloadResult.value,
     });
-    console.log(JSON.stringify(callResult, null, 2));
+    console.log(JSON.stringify(callResult, null, 2).replace(/\\n/g, "\n"));
   } catch (error) {
     console.error(`Tool execution failed: ${getErrorMessage(error)}`);
     return exit(EXIT_TOOL);

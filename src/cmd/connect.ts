@@ -8,7 +8,7 @@ import {
   formatCallResult,
   type ToolInfo,
 } from "../domain/tools.ts";
-import { parseInvocation, parseJson5Payload } from "./parse.ts";
+import { parseInvocation, parsePayload } from "./parse.ts";
 import { createRunner } from "../domain/runner.ts";
 import { getErrorMessage } from "../lib/errors.ts";
 
@@ -81,6 +81,19 @@ export async function handleConnect(target: string): Promise<never> {
         }
         continue;
       }
+      case "/h":
+      case "/help": {
+        console.log(`Commands:
+  /help, /h     Show this help
+  /tools, /t    List available tools
+  /quit, /q     Exit
+
+Usage:
+  <tool> <args>           Call a tool with arguments
+  <tool> key=value ...    Query-style arguments
+  <tool> {"key": "value"} JSON5 arguments`);
+        continue;
+      }
       default:
         break;
     }
@@ -96,7 +109,7 @@ export async function handleConnect(target: string): Promise<never> {
       continue;
     }
 
-    const payloadResult = parseJson5Payload(
+    const payloadResult = parsePayload(
       parsedInvocation.value.payloadText,
       true,
     );

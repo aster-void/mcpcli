@@ -29,23 +29,23 @@ Requires Node.js 22+ and bun (for development).
 
 ### Connect
 
+Interactive mode with REPL. Available commands:
+
+- `/help`, `/h` — show help
+- `/tools`, `/t` — list available tools
+- `/quit`, `/q` — exit
+
 Example:
 
 ```sh
 $ climcp connect bunx @modelcontextprotocol/server-filesystem .
-[prints usage]
-> list_directory { path: "." }
-result: {
-  "content": [
-    {
-      "type": "text",
-      "text": "[FILE] lefthook.yml\n[DIR] nix\n[FILE] CLAUDE.md\n[DIR] src\n[FILE] flake.nix\n[DIR] node_modules\n[DIR] .direnv\n[FILE] LICENSE\n[FILE] bun.lock\n[FILE] AGENTS.md\n[FILE] DEVELOPMENT.md\n[FILE] flake.lock\n[FILE] .gitignore\n[FILE] package.json\n[DIR] scripts\n[DIR] .git\n[FILE] tsconfig.json\n[FILE] README.md\n[FILE] .envrc\n[DIR] dist\n[DIR] .github"
-    }
-  ],
-  "structuredContent": {
-    "content": "[FILE] lefthook.yml\n[DIR] nix\n[FILE] CLAUDE.md\n[DIR] src\n[FILE] flake.nix\n[DIR] node_modules\n[DIR] .direnv\n[FILE] LICENSE\n[FILE] bun.lock\n[FILE] AGENTS.md\n[FILE] DEVELOPMENT.md\n[FILE] flake.lock\n[FILE] .gitignore\n[FILE] package.json\n[DIR] scripts\n[DIR] .git\n[FILE] tsconfig.json\n[FILE] README.md\n[FILE] .envrc\n[DIR] dist\n[DIR] .github"
-  }
-}
+read_file: { path: string, tail?: number, head?: number }
+Read the complete contents of a file as text.
+...
+
+> list_directory path=.
+< result: { ... }
+
 > /q
 ```
 
@@ -56,6 +56,9 @@ One-shot execution. Supports two input formats:
 ```sh
 # Query style (key=value)
 climcp run "bunx @modelcontextprotocol/server-filesystem ." list_directory path=.
+
+# Quoted values supported
+climcp run "..." some_tool message="hello world" name='John Doe'
 
 # JSON style
 climcp run "bunx @modelcontextprotocol/server-filesystem ." list_directory '{ "path": "." }'
@@ -68,7 +71,7 @@ echo '{ path: "." }' | climcp run "bunx @modelcontextprotocol/server-filesystem 
 echo "path=." | climcp run "bunx @modelcontextprotocol/server-filesystem ." list_directory
 ```
 
-Format is auto-detected: `{` prefix means JSON5 (supports trailing commas, unquoted keys, comments), otherwise query style.
+Format is auto-detected: `{` prefix means JSON5 (supports trailing commas, unquoted keys, comments), otherwise query style (shell-like quoting supported).
 
 Success prints JSON to stdout; any failure writes to stderr and exits non-zero.
 

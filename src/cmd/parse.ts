@@ -1,5 +1,7 @@
 import JSON5 from "json5";
+import { parse as shellParse } from "shell-quote";
 import { err, ok, type Result } from "../lib/result.ts";
+import { getErrorMessage } from "../lib/errors.ts";
 import * as v from "valibot";
 
 export type ToolInvocation = {
@@ -44,21 +46,23 @@ export function parseJson5Payload(
     }
     return ok(validation.output);
   } catch (error) {
-    return err(
-      new Error(
-        `Failed to parse JSON5: ${error instanceof Error ? error.message : String(error)}`,
-      ),
-    );
+    return err(new Error(`Failed to parse JSON5: ${getErrorMessage(error)}`));
   }
 }
 
 export function parseQueryStyle(text: string): Result<Record<string, unknown>> {
-  const parts = text.trim().split(/\s+/);
-  if (parts.length === 1 && parts[0] === "") {
+  const trimmed = text.trim();
+  if (!trimmed) {
     return ok({});
   }
+
+  const parts = shellParse(trimmed);
   const result: Record<string, unknown> = {};
+
   for (const part of parts) {
+    if (typeof part !== "string") {
+      return err(new Error(`Unsupported shell operator in arguments`));
+    }
     const eqIndex = part.indexOf("=");
     if (eqIndex === -1) {
       return err(

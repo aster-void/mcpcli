@@ -1,32 +1,34 @@
 {
-	"name": "climcp",
-	"version": "0.0.1",
-	"description": "An interface between you and MCP servers.",
-	"type": "module",
-	"main": "index.js",
-	"scripts": {
-		"build": "bun run check && bun build src/index.ts --outdir dist --target node --minify && cp package.json README.md LICENSE dist/",
-		"check": "bun type-check && bun run test",
-		"type-check": "tsc --noEmit",
-		"test": "bun test && scripts/test-cli.sh",
-		"start": "bun src/index.ts"
-	},
-	"bin": {
-		"climcp": "index.js"
-	},
-	"keywords": [],
-	"author": "",
-	"license": "MIT",
-	"packageManager": "bun@1.3.2",
-	"devDependencies": {
-		"@modelcontextprotocol/sdk": "^1.24.2",
-		"@modelcontextprotocol/server-filesystem": "^2025.11.25",
-		"@types/bun": "^1.3.3",
-		"commander": "^14.0.2",
-		"json5": "^2.2.3",
-		"lefthook": "^2.0.7",
-		"prettier": "^3.7.4",
-		"typescript": "^5.9.3",
-		"valibot": "^1.2.0"
-	}
+  "name": "climcp",
+  "version": "0.0.1",
+  "author": "",
+  "main": "index.js",
+  "devDependencies": {
+    "@modelcontextprotocol/sdk": "^1.24.2",
+    "@modelcontextprotocol/server-filesystem": "^2025.11.25",
+    "@types/bun": "^1.3.3",
+    "@types/shell-quote": "^1.7.5",
+    "commander": "^14.0.2",
+    "json5": "^2.2.3",
+    "lefthook": "^2.0.7",
+    "prettier": "^3.7.4",
+    "shell-quote": "^1.8.3",
+    "typescript": "^5.9.3",
+    "valibot": "^1.2.0"
+  },
+  "bin": {
+    "climcp": "index.js"
+  },
+  "description": "An interface between you and MCP servers.",
+  "keywords": [],
+  "license": "MIT",
+  "packageManager": "bun@1.3.2",
+  "scripts": {
+    "build": "bun run check && bun build src/index.ts --outdir dist --target node --minify && cp package.json README.md LICENSE dist/",
+    "check": "bun type-check && bun run test",
+    "type-check": "tsc --noEmit",
+    "test": "bun test && scripts/test-cli.sh",
+    "start": "bun src/index.ts"
+  },
+  "type": "module"
 }
