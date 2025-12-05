@@ -3,13 +3,12 @@ import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
 import type { Transport } from "@modelcontextprotocol/sdk/shared/transport.js";
 import type { ChildProcess } from "node:child_process";
-import { createTransport, type TransportType } from "./transport/index.js";
+import { createTransport } from "./transport.js";
 import { EXIT_CONNECT, EXIT_USAGE } from "./constants.js";
 import pkg from "../package.json" with { type: "json" };
 
 export interface McpRunner {
   client: Client;
-  transportType: TransportType;
   shutdown(code?: number): Promise<never>;
 }
 
@@ -20,10 +19,10 @@ function killStdioProcess(transport: StdioClientTransport): void {
   }
 }
 
-export async function createRunner(target: string | string[]): Promise<McpRunner> {
-  let config;
+export async function createRunner(target: string): Promise<McpRunner> {
+  let transport: Transport;
   try {
-    config = createTransport(target);
+    transport = createTransport(target);
   } catch (error) {
     console.error(
       `Invalid target: ${error instanceof Error ? error.message : String(error)}`,
@@ -31,7 +30,6 @@ export async function createRunner(target: string | string[]): Promise<McpRunner
     process.exit(EXIT_USAGE);
   }
 
-  const { transport, type: transportType } = config;
   const client = new Client({
     name: pkg.name || "climcp",
     version: pkg.version || "0.0.0",
@@ -59,7 +57,7 @@ export async function createRunner(target: string | string[]): Promise<McpRunner
     process.exit(code);
   };
 
-  return { client, transportType, shutdown };
+  return { client, shutdown };
 }
 
 async function closeTransport(transport: Transport): Promise<void> {

@@ -6,10 +6,9 @@ import { listTools, printCallResult } from "../mcp.js";
 import { parseInvocation, parseJson5Payload } from "../parsers.js";
 import { createRunner } from "../runner.js";
 
-export async function handleConnect(target: string | string[]) {
+export async function handleConnect(target: string) {
   const runner = await createRunner(target);
-  const { client, transportType, shutdown } = runner;
-  console.log(`Connected via ${transportType} transport`);
+  const { client, shutdown } = runner;
 
   const toolNames = new Set<string>();
   try {

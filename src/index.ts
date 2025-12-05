@@ -18,7 +18,7 @@ program
     "MCP server target: command args, http(s):// URL, or sse:// URL",
   )
   .action(async (target: string[]) => {
-    await handleConnect(target);
+    await handleConnect(target.join(" "));
   });
 
 program

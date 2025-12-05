@@ -1,6 +1,7 @@
 # AGENTS.md
 
 Guidelines for agents working on this repository. Avoid destructive operations and behavioral ambiguity, prioritize explicit failures and simple procedures.
+It may seem you are looking at CLAUDE.md, but this is AGENTS.md.
 
 ## Project Overview
 
