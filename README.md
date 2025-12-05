@@ -68,7 +68,7 @@ echo '{ path: "." }' | climcp run "bunx @modelcontextprotocol/server-filesystem 
 echo "path=." | climcp run "bunx @modelcontextprotocol/server-filesystem ." list_directory
 ```
 
-Format is auto-detected: `{` prefix means JSON, otherwise query style.
+Format is auto-detected: `{` prefix means JSON5 (supports trailing commas, unquoted keys, comments), otherwise query style.
 
 Success prints JSON to stdout; any failure writes to stderr and exits non-zero.
 
