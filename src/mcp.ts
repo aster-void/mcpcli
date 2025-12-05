@@ -6,7 +6,7 @@ import {
   type StdioServerParameters,
 } from "@modelcontextprotocol/sdk/client/stdio.js";
 import { EXIT_CONNECT, EXIT_USAGE } from "./constants.js";
-import { toTSStyle, parseJsonSchema } from "./lib/json-schema.js";
+import { toTSStyleOneLine, parseJsonSchema } from "./lib/json-schema.js";
 import pkg from "../package.json" with { type: "json" };
 
 export type ToolInfo = Pick<Tool, "name" | "description" | "inputSchema">;
@@ -59,12 +59,12 @@ export async function listTools(client: Client): Promise<ToolInfo[]> {
   const response = await client.listTools();
   const tools = response.tools || [];
   tools.forEach((tool) => {
-    const desc = tool.description ? `: ${tool.description}` : "";
-    console.log(`- ${tool.name}${desc}`);
     const schema = parseJsonSchema(tool.inputSchema);
-    const tsStyle = toTSStyle(schema, 1);
-    console.log("  expected schema:");
-    tsStyle.split("\n").forEach((line) => console.log(`    ${line}`));
+    const format = toTSStyleOneLine(schema);
+    console.log(`[${tool.name}]: ${format}`);
+    if (tool.description) {
+      console.log(`  ${tool.description}`);
+    }
   });
   return tools.map((tool) => ({
     name: tool.name,

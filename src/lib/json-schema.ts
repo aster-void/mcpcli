@@ -85,3 +85,48 @@ export function toTSStyle(schema: JsonSchema, indent = 0): string {
 
   return "unknown";
 }
+
+export function toTSStyleOneLine(schema: JsonSchema): string {
+  if (schema.enum) {
+    return schema.enum.map((v) => JSON.stringify(v)).join(" | ");
+  }
+
+  if (schema.anyOf) {
+    return schema.anyOf.map((s) => toTSStyleOneLine(s)).join(" | ");
+  }
+
+  if (schema.oneOf) {
+    return schema.oneOf.map((s) => toTSStyleOneLine(s)).join(" | ");
+  }
+
+  if (schema.allOf) {
+    return schema.allOf.map((s) => toTSStyleOneLine(s)).join(" & ");
+  }
+
+  const types = Array.isArray(schema.type) ? schema.type : [schema.type];
+
+  if (types.includes("array") && schema.items) {
+    return `${toTSStyleOneLine(schema.items)}[]`;
+  }
+
+  if (types.includes("object") && schema.properties) {
+    const requiredSet = new Set(schema.required || []);
+    const props: string[] = [];
+
+    for (const [key, propSchema] of Object.entries(schema.properties)) {
+      const optional = requiredSet.has(key) ? "" : "?";
+      const propType = toTSStyleOneLine(propSchema);
+      props.push(`${key}${optional}: ${propType}`);
+    }
+
+    return `{ ${props.join(", ")} }`;
+  }
+
+  if (types.includes("string")) return "string";
+  if (types.includes("number")) return "number";
+  if (types.includes("integer")) return "number";
+  if (types.includes("boolean")) return "boolean";
+  if (types.includes("null")) return "null";
+
+  return "unknown";
+}

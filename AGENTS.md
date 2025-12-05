@@ -35,9 +35,9 @@ Guidelines for agents working on this repository. Avoid destructive operations a
 ## Development Commands
 
 ```sh
-bun install
-bun run build
-bun test
+bun run build # build the package
+bun test # run tests
+bun check # run checks
 ```
 
 ## Nix / Flake Notes

@@ -5,28 +5,32 @@ import { handleRun } from "./cmd/run.js";
 
 const program = new Command();
 program
-	.name("climcp")
-	.description("Simple MCP connector CLI")
-	.configureOutput({
-		outputError: (str, write) => write(str),
-	});
+  .name("climcp")
+  .description("Simple MCP connector CLI")
+  .configureOutput({
+    outputError: (str, write) => write(str),
+  });
 
 program
-	.command("connect")
-	.argument("<command...>", "Command to start the MCP server")
-	.action(async (commandArgs) => {
-		await handleConnect(commandArgs);
-	});
+  .command("connect")
+  .argument("<command...>", "Command to start the MCP server")
+  .action(async (commandArgs) => {
+    await handleConnect(commandArgs);
+  });
 
 program
-	.command("run")
-	.argument("<tool>", "Tool name to run")
-	.argument("<command...>", "Command to start the MCP server")
-	.action(async (tool, commandArgs) => {
-		await handleRun(tool, commandArgs);
-	});
+  .command("run")
+  .argument(
+    "<command>",
+    "Command to start the MCP server (quote if contains spaces)",
+  )
+  .argument("[tool]", "Tool name to run (omit to list tools)")
+  .argument("[args...]", "Tool arguments (key=value or JSON)")
+  .action(async (command, tool, args) => {
+    await handleRun(command, tool, args);
+  });
 
 program.parseAsync(process.argv).catch((error) => {
-	console.error(error instanceof Error ? error.message : String(error));
-	process.exit(EXIT_USAGE);
+  console.error(error instanceof Error ? error.message : String(error));
+  process.exit(EXIT_USAGE);
 });

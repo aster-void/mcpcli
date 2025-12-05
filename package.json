@@ -5,7 +5,8 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "build": "bun build src/index.ts --outdir dist --target node --minify && cp package.json README.md LICENSE dist/",
+    "build": "bun run check && bun build src/index.ts --outdir dist --target node --minify && cp package.json README.md LICENSE dist/",
+    "check": "tsc --noEmit",
     "test": "bun test && bash scripts/test-cli.sh"
   },
   "bin": {
@@ -18,7 +19,7 @@
   "devDependencies": {
     "@modelcontextprotocol/sdk": "^1.24.2",
     "@modelcontextprotocol/server-filesystem": "^2025.11.25",
-    "@types/node": "^24.10.1",
+    "@types/bun": "^1.3.3",
     "commander": "^14.0.2",
     "json5": "^2.2.3",
     "lefthook": "^2.0.7",

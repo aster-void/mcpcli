@@ -25,7 +25,7 @@ Requires Node.js 22+ and bun (for development).
 ## Commands
 
 - `climcp connect <command...>` — start the MCP server process, handshake, drop into an interactive prompt.
-- `climcp run "tool" <command...>` — start the server, call one tool once with JSON from stdin, exit.
+- `climcp run "<command>" [tool] [args...]` — start the server, call one tool once, exit. Omit tool to list available tools.
 
 ### Connect
 
@@ -51,11 +51,24 @@ result: {
 
 ### Run
 
-One-shot execution; args come from stdin:
+One-shot execution. Supports two input formats:
 
 ```sh
-echo '{path:"."}' | climcp run "list_directory" bunx @modelcontextprotocol/server-filesystem .
+# Query style (key=value)
+climcp run "bunx @modelcontextprotocol/server-filesystem ." list_directory path=.
+
+# JSON style
+climcp run "bunx @modelcontextprotocol/server-filesystem ." list_directory '{ "path": "." }'
+
+# List available tools (omit tool name)
+climcp run "bunx @modelcontextprotocol/server-filesystem ."
+
+# stdin also works (JSON or query style)
+echo '{ path: "." }' | climcp run "bunx @modelcontextprotocol/server-filesystem ." list_directory
+echo "path=." | climcp run "bunx @modelcontextprotocol/server-filesystem ." list_directory
 ```
+
+Format is auto-detected: `{` prefix means JSON, otherwise query style.
 
 Success prints JSON to stdout; any failure writes to stderr and exits non-zero.
 

@@ -1,11 +1,5 @@
 import { test, expect } from "bun:test";
-import { spawn, SpawnOptionsWithoutStdio } from "node:child_process";
-
-const CLI = ["bun", "src/index.ts"];
-const BASE_OPTS: SpawnOptionsWithoutStdio = {
-  env: process.env,
-  stdio: ["pipe", "pipe", "pipe"],
-};
+import { spawn } from "node:child_process";
 
 type RunResult = { stdout: string; stderr: string };
 
@@ -15,7 +9,9 @@ function runAndCapture(
   timeoutMs = 40_000,
 ): Promise<RunResult> {
   return new Promise((resolve, reject) => {
-    const child = spawn(CLI[0], [...CLI.slice(1), ...args], BASE_OPTS);
+    const child = spawn("bun", ["src/index.ts", ...args], {
+      stdio: ["pipe", "pipe", "pipe"],
+    });
     const stdout: string[] = [];
     const stderr: string[] = [];
 
@@ -35,15 +31,15 @@ function runAndCapture(
       );
     });
 
-    child.stdout.on("data", (buf) => stdout.push(buf.toString()));
-    child.stderr.on("data", (buf) => stderr.push(buf.toString()));
+    child.stdout.on("data", (buf: Buffer) => stdout.push(buf.toString()));
+    child.stderr.on("data", (buf: Buffer) => stderr.push(buf.toString()));
 
-    child.on("error", (err) => {
+    child.on("error", (err: Error) => {
       clearTimeout(timer);
       reject(err);
     });
 
-    child.on("close", (code) => {
+    child.on("close", (code: number | null) => {
       clearTimeout(timer);
       if (code !== 0) {
         reject(
@@ -64,7 +60,7 @@ test("connect lists tools", async () => {
     ["/q\n"],
   );
   expect(
-    result.stdout.includes("- read_file") ||
+    result.stdout.includes("[read_file]") ||
       result.stdout.includes("Allowed directories"),
   ).toBe(true);
 });
