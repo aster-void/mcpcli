@@ -54,3 +54,4 @@ bun test
 
 - Keep src/index.ts minimal.
 - `as` and `any` are absolutely forbidden. Seriously, you'll get in trouble if you use them.
+  - except for `as const` and `import * as foo from ...`. these are safe.

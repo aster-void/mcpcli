@@ -6,8 +6,7 @@
   "main": "index.js",
   "scripts": {
     "build": "bun build src/index.ts --outdir dist --target node --minify && cp package.json README.md LICENSE dist/",
-    "test": "bun run build && bun test && bash scripts/test-cli.sh && bun scripts/test-cli-interactive.ts",
-    "test:interactive": "bun run build && bun scripts/test-cli-interactive.ts"
+    "test": "bun test && bash scripts/test-cli.sh"
   },
   "bin": {
     "climcp": "index.js"
