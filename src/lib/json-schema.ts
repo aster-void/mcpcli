@@ -1,4 +1,5 @@
 import * as v from "valibot";
+import { cyan, blue, yellow, green, dim } from "./colors.js";
 
 export type JsonSchema = {
   type?: string | string[];
@@ -86,27 +87,43 @@ export function toTSStyle(schema: JsonSchema, indent = 0): string {
   return "unknown";
 }
 
-export function toTSStyleOneLine(schema: JsonSchema): string {
+export function toTSStyleOneLine(schema: JsonSchema, colored = false): string {
+  const c = colored
+    ? { cyan, blue, yellow, green, dim }
+    : { cyan: (s: string) => s, blue: (s: string) => s, yellow: (s: string) => s, green: (s: string) => s, dim: (s: string) => s };
+
+  return toTSStyleOneLineInner(schema, c);
+}
+
+type ColorFns = {
+  cyan: (s: string) => string;
+  blue: (s: string) => string;
+  yellow: (s: string) => string;
+  green: (s: string) => string;
+  dim: (s: string) => string;
+};
+
+function toTSStyleOneLineInner(schema: JsonSchema, c: ColorFns): string {
   if (schema.enum) {
-    return schema.enum.map((v) => JSON.stringify(v)).join(" | ");
+    return schema.enum.map((val) => c.green(JSON.stringify(val))).join(c.dim(" | "));
   }
 
   if (schema.anyOf) {
-    return schema.anyOf.map((s) => toTSStyleOneLine(s)).join(" | ");
+    return schema.anyOf.map((s) => toTSStyleOneLineInner(s, c)).join(c.dim(" | "));
   }
 
   if (schema.oneOf) {
-    return schema.oneOf.map((s) => toTSStyleOneLine(s)).join(" | ");
+    return schema.oneOf.map((s) => toTSStyleOneLineInner(s, c)).join(c.dim(" | "));
   }
 
   if (schema.allOf) {
-    return schema.allOf.map((s) => toTSStyleOneLine(s)).join(" & ");
+    return schema.allOf.map((s) => toTSStyleOneLineInner(s, c)).join(c.dim(" & "));
   }
 
   const types = Array.isArray(schema.type) ? schema.type : [schema.type];
 
   if (types.includes("array") && schema.items) {
-    return `${toTSStyleOneLine(schema.items)}[]`;
+    return `${toTSStyleOneLineInner(schema.items, c)}${c.dim("[]")}`;
   }
 
   if (types.includes("object") && schema.properties) {
@@ -114,19 +131,19 @@ export function toTSStyleOneLine(schema: JsonSchema): string {
     const props: string[] = [];
 
     for (const [key, propSchema] of Object.entries(schema.properties)) {
-      const optional = requiredSet.has(key) ? "" : "?";
-      const propType = toTSStyleOneLine(propSchema);
-      props.push(`${key}${optional}: ${propType}`);
+      const optional = requiredSet.has(key) ? "" : c.yellow("?");
+      const propType = toTSStyleOneLineInner(propSchema, c);
+      props.push(`${c.cyan(key)}${optional}${c.dim(":")} ${propType}`);
     }
 
-    return `{ ${props.join(", ")} }`;
+    return `${c.dim("{")} ${props.join(c.dim(", "))} ${c.dim("}")}`;
   }
 
-  if (types.includes("string")) return "string";
-  if (types.includes("number")) return "number";
-  if (types.includes("integer")) return "number";
-  if (types.includes("boolean")) return "boolean";
-  if (types.includes("null")) return "null";
+  if (types.includes("string")) return c.blue("string");
+  if (types.includes("number")) return c.blue("number");
+  if (types.includes("integer")) return c.blue("number");
+  if (types.includes("boolean")) return c.blue("boolean");
+  if (types.includes("null")) return c.blue("null");
 
-  return "unknown";
+  return c.blue("unknown");
 }

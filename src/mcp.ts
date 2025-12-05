@@ -60,7 +60,7 @@ export async function listTools(client: Client): Promise<ToolInfo[]> {
   const tools = response.tools || [];
   tools.forEach((tool) => {
     const schema = parseJsonSchema(tool.inputSchema);
-    const format = toTSStyleOneLine(schema);
+    const format = toTSStyleOneLine(schema, true);
     console.log(`[${tool.name}]: ${format}`);
     if (tool.description) {
       console.log(`  ${tool.description}`);
