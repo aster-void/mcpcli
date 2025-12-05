@@ -5,12 +5,11 @@ import { connectClient, listTools } from "../mcp.js";
 import { parsePayload } from "../parsers.js";
 
 export async function handleRun(
-  command: string,
+  target: string,
   toolName: string | undefined,
   args: string[],
 ) {
-  const commandArgs = command.split(/\s+/);
-  const { client, transport } = await connectClient(commandArgs);
+  const { client, transport } = await connectClient(target);
   const shutdown = async (code: number) => {
     await client.close();
     await transport.close();

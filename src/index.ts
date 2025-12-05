@@ -13,21 +13,24 @@ program
 
 program
   .command("connect")
-  .argument("<command...>", "Command to start the MCP server")
-  .action(async (commandArgs) => {
-    await handleConnect(commandArgs);
+  .argument(
+    "<target...>",
+    "MCP server target: command args, http(s):// URL, or sse:// URL",
+  )
+  .action(async (target: string[]) => {
+    await handleConnect(target);
   });
 
 program
   .command("run")
   .argument(
-    "<command>",
-    "Command to start the MCP server (quote if contains spaces)",
+    "<target>",
+    "MCP server target: command (quote if spaces), http(s):// URL, or sse:// URL",
   )
   .argument("[tool]", "Tool name to run (omit to list tools)")
   .argument("[args...]", "Tool arguments (key=value or JSON)")
-  .action(async (command, tool, args) => {
-    await handleRun(command, tool, args);
+  .action(async (target: string, tool: string | undefined, args: string[]) => {
+    await handleRun(target, tool, args);
   });
 
 program.parseAsync(process.argv).catch((error) => {
