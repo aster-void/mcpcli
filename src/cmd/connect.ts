@@ -1,14 +1,14 @@
-import process from "node:process";
 import readline from "node:readline";
-import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
+import process from "node:process";
 import { EXIT_CONNECT } from "../constants.js";
 import { askLine } from "../io.js";
-import { connectClient, listTools, printCallResult } from "../mcp.js";
+import { listTools, printCallResult } from "../mcp.js";
 import { parseInvocation, parseJson5Payload } from "../parsers.js";
-import { killStdioProcess } from "../transport.js";
+import { createRunner } from "../runner.js";
 
 export async function handleConnect(target: string | string[]) {
-  const { client, transport, transportType } = await connectClient(target);
+  const runner = await createRunner(target);
+  const { client, transportType, shutdown } = runner;
   console.log(`Connected via ${transportType} transport`);
 
   const toolNames = new Set<string>();
@@ -19,12 +19,7 @@ export async function handleConnect(target: string | string[]) {
     console.error(
       `Failed to list tools: ${error instanceof Error ? error.message : String(error)}`,
     );
-    await client.close();
-    if (transport instanceof StdioClientTransport) {
-      killStdioProcess(transport);
-    }
-    await transport.close();
-    process.exit(EXIT_CONNECT);
+    await shutdown(EXIT_CONNECT);
   }
 
   const rl = readline.createInterface({
@@ -37,12 +32,7 @@ export async function handleConnect(target: string | string[]) {
     if (closing) return;
     closing = true;
     rl.close();
-    await client.close();
-    if (transport instanceof StdioClientTransport) {
-      killStdioProcess(transport);
-    }
-    await transport.close();
-    process.exit(code);
+    await shutdown(code);
   };
 
   rl.on("SIGINT", () => cleanup(0));

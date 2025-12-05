@@ -1,25 +1,16 @@
-import process from "node:process";
-import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
 import { EXIT_CONNECT, EXIT_TOOL, EXIT_USAGE } from "../constants.js";
 import { readStdin } from "../io.js";
-import { connectClient, listTools } from "../mcp.js";
+import { listTools } from "../mcp.js";
 import { parsePayload } from "../parsers.js";
-import { killStdioProcess } from "../transport.js";
+import { createRunner } from "../runner.js";
 
 export async function handleRun(
   target: string,
   toolName: string | undefined,
   args: string[],
 ) {
-  const { client, transport } = await connectClient(target);
-  const shutdown = async (code: number) => {
-    await client.close();
-    if (transport instanceof StdioClientTransport) {
-      killStdioProcess(transport);
-    }
-    await transport.close();
-    process.exit(code);
-  };
+  const runner = await createRunner(target);
+  const { client, shutdown } = runner;
 
   if (toolName === undefined) {
     try {
@@ -28,11 +19,9 @@ export async function handleRun(
       console.error(
         `Failed to list tools: ${error instanceof Error ? error.message : String(error)}`,
       );
-      await shutdown(EXIT_CONNECT);
-      return;
+      return shutdown(EXIT_CONNECT);
     }
-    await shutdown(0);
-    return;
+    return shutdown(0);
   }
 
   try {
@@ -40,15 +29,13 @@ export async function handleRun(
     const names = new Set((tools.tools || []).map((t) => t.name));
     if (!names.has(toolName)) {
       console.error(`Tool not found: ${toolName}`);
-      await shutdown(EXIT_CONNECT);
-      return;
+      return shutdown(EXIT_CONNECT);
     }
   } catch (error) {
     console.error(
       `Failed to list tools: ${error instanceof Error ? error.message : String(error)}`,
     );
-    await shutdown(EXIT_CONNECT);
-    return;
+    return shutdown(EXIT_CONNECT);
   }
 
   let input: string;
@@ -61,16 +48,14 @@ export async function handleRun(
       console.error(
         `Failed to read stdin: ${error instanceof Error ? error.message : String(error)}`,
       );
-      await shutdown(EXIT_USAGE);
-      return;
+      return shutdown(EXIT_USAGE);
     }
   }
 
   const payloadResult = parsePayload(input, true);
   if (!payloadResult.ok) {
     console.error(payloadResult.error.message);
-    await shutdown(EXIT_USAGE);
-    return;
+    return shutdown(EXIT_USAGE);
   }
 
   try {
@@ -83,9 +68,8 @@ export async function handleRun(
     console.error(
       `Tool execution failed: ${error instanceof Error ? error.message : String(error)}`,
     );
-    await shutdown(EXIT_TOOL);
-    return;
+    return shutdown(EXIT_TOOL);
   }
 
-  await shutdown(0);
+  return shutdown(0);
 }

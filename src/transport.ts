@@ -2,20 +2,12 @@ import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js"
 import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
 import { SSEClientTransport } from "@modelcontextprotocol/sdk/client/sse.js";
 import type { Transport } from "@modelcontextprotocol/sdk/shared/transport.js";
-import type { ChildProcess } from "node:child_process";
 
 export type TransportType = "stdio" | "http" | "sse";
 
 export interface TransportConfig {
   type: TransportType;
   transport: Transport;
-}
-
-export function killStdioProcess(transport: StdioClientTransport): void {
-  const proc = (transport as unknown as { _process?: ChildProcess })._process;
-  if (proc && !proc.killed) {
-    proc.kill("SIGTERM");
-  }
 }
 
 /**
