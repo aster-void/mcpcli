@@ -1,9 +1,11 @@
 import process from "node:process";
 import readline from "node:readline";
+import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
 import { EXIT_CONNECT } from "../constants.js";
 import { askLine } from "../io.js";
 import { connectClient, listTools, printCallResult } from "../mcp.js";
 import { parseInvocation, parseJson5Payload } from "../parsers.js";
+import { killStdioProcess } from "../transport.js";
 
 export async function handleConnect(target: string | string[]) {
   const { client, transport, transportType } = await connectClient(target);
@@ -18,6 +20,9 @@ export async function handleConnect(target: string | string[]) {
       `Failed to list tools: ${error instanceof Error ? error.message : String(error)}`,
     );
     await client.close();
+    if (transport instanceof StdioClientTransport) {
+      killStdioProcess(transport);
+    }
     await transport.close();
     process.exit(EXIT_CONNECT);
   }
@@ -33,6 +38,9 @@ export async function handleConnect(target: string | string[]) {
     closing = true;
     rl.close();
     await client.close();
+    if (transport instanceof StdioClientTransport) {
+      killStdioProcess(transport);
+    }
     await transport.close();
     process.exit(code);
   };

@@ -1,8 +1,10 @@
 import process from "node:process";
+import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
 import { EXIT_CONNECT, EXIT_TOOL, EXIT_USAGE } from "../constants.js";
 import { readStdin } from "../io.js";
 import { connectClient, listTools } from "../mcp.js";
 import { parsePayload } from "../parsers.js";
+import { killStdioProcess } from "../transport.js";
 
 export async function handleRun(
   target: string,
@@ -12,6 +14,9 @@ export async function handleRun(
   const { client, transport } = await connectClient(target);
   const shutdown = async (code: number) => {
     await client.close();
+    if (transport instanceof StdioClientTransport) {
+      killStdioProcess(transport);
+    }
     await transport.close();
     process.exit(code);
   };
