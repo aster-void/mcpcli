@@ -85,10 +85,13 @@ describe("parseQueryStyle", () => {
   });
 
   test("parses quoted values", () => {
-    const result = parseQueryStyle('message="hello world" name=\'John Doe\'');
+    const result = parseQueryStyle("message=\"hello world\" name='John Doe'");
     expect(result.ok).toBe(true);
     if (result.ok) {
-      expect(result.value).toEqual({ message: "hello world", name: "John Doe" });
+      expect(result.value).toEqual({
+        message: "hello world",
+        name: "John Doe",
+      });
     }
   });
 

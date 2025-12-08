@@ -5,9 +5,13 @@ const SERVER_BIN = "node_modules/.bin/mcp-server-filesystem";
 
 function connectAndQuit(timeoutMs = 10_000): Promise<{ stdout: string }> {
   return new Promise((resolve, reject) => {
-    const child = spawn("bun", ["src/index.ts", "connect", "bun", SERVER_BIN, "."], {
-      stdio: ["pipe", "pipe", "pipe"],
-    });
+    const child = spawn(
+      "bun",
+      ["src/index.ts", "connect", "bun", SERVER_BIN, "."],
+      {
+        stdio: ["pipe", "pipe", "pipe"],
+      },
+    );
     const stdout: string[] = [];
 
     const timer = setTimeout(() => {
