@@ -3,6 +3,10 @@
 Guidelines for agents working on this repository. Avoid destructive operations and behavioral ambiguity, prioritize explicit failures and simple procedures.
 It may seem you are looking at CLAUDE.md, but this is AGENTS.md.
 
+## What is climcp
+
+A CLI for calling MCP server tools directly from the terminal. Use `climcp connect <cmd>` for interactive exploration or `climcp run "<cmd>" <tool> <args>` for one-shot execution in scripts/CI.
+
 ## Project Overview
 
 - climcp built with bun. `climcp connect <command...>` starts and interacts with a server, `climcp run "tool" <command...>` executes once.
