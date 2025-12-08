@@ -1,7 +1,9 @@
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
 import type { Transport } from "@modelcontextprotocol/sdk/shared/transport.js";
+import { ListRootsRequestSchema } from "@modelcontextprotocol/sdk/types.js";
 import type { ChildProcess } from "node:child_process";
+import { pathToFileURL } from "node:url";
 import { createTransport } from "./transport.ts";
 import { getErrorMessage } from "../lib/errors.ts";
 import pkg from "../../package.json" with { type: "json" };
@@ -41,9 +43,30 @@ export async function createRunner(
     };
   }
 
-  const client = new Client({
-    name: pkg.name || "climcp",
-    version: pkg.version || "0.0.0",
+  const client = new Client(
+    {
+      name: pkg.name || "climcp",
+      version: pkg.version || "0.0.0",
+    },
+    {
+      capabilities: {
+        roots: {
+          listChanged: false,
+        },
+      },
+    },
+  );
+
+  client.setRequestHandler(ListRootsRequestSchema, () => {
+    const cwd = process.cwd();
+    return {
+      roots: [
+        {
+          uri: pathToFileURL(cwd).href,
+          name: cwd,
+        },
+      ],
+    };
   });
 
   if (transport instanceof StdioClientTransport && transport.stderr) {
