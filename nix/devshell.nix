@@ -2,6 +2,6 @@
 pkgs.mkShell {
   packages = [
     pkgs.bun
-    pkgs.nodejs-slim
+    pkgs.nodejs
   ];
 }
