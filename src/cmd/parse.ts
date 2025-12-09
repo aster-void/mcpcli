@@ -85,14 +85,51 @@ function parseQueryStyleParts(
         new Error(`Invalid argument format: "${part}" (expected key=value)`),
       );
     }
-    const key = part.slice(0, eqIndex);
+    const rawKey = part.slice(0, eqIndex);
     const value = part.slice(eqIndex + 1);
-    if (!key) {
+    if (!rawKey) {
       return err(new Error(`Empty key in argument: "${part}"`));
     }
-    result[key] = parseValue(value);
+
+    // [key.with.dots] syntax treats the key as literal (no nesting)
+    const bracketMatch = /^\[(.+)\]$/.exec(rawKey);
+    if (bracketMatch && bracketMatch[1]) {
+      result[bracketMatch[1]] = parseValue(value);
+    } else {
+      setNestedValue(result, rawKey, parseValue(value));
+    }
   }
   return ok(result);
+}
+
+// Set a value in a nested object using dot notation.
+// "foo.bar" sets result.foo.bar = value
+// Keys are treated as literal (no expansion) if they don't contain dots.
+function setNestedValue(
+  obj: Record<string, unknown>,
+  key: string,
+  value: unknown,
+): void {
+  const keys = key.split(".");
+  if (keys.length === 1) {
+    obj[key] = value;
+    return;
+  }
+
+  let current: Record<string, unknown> = obj;
+  for (let i = 0; i < keys.length - 1; i++) {
+    const k = keys[i] ?? "";
+    if (
+      !(k in current) ||
+      typeof current[k] !== "object" ||
+      current[k] === null
+    ) {
+      current[k] = {};
+    }
+    current = current[k] as Record<string, unknown>;
+  }
+  const lastKey = keys[keys.length - 1] ?? "";
+  current[lastKey] = value;
 }
 
 function parseValue(value: string): unknown {

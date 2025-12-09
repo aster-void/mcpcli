@@ -3,6 +3,7 @@ import {
   parseInvocation,
   parseJson5Payload,
   parseQueryStyle,
+  parseQueryStyleArgs,
   parsePayload,
 } from "./parse.ts";
 
@@ -134,6 +135,163 @@ describe("parseQueryStyle", () => {
       expect(result.value).toEqual({});
     }
   });
+
+  test("nested keys are expanded into nested objects", () => {
+    const result = parseQueryStyle("foo.bar=value");
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.value).toEqual({ foo: { bar: "value" } });
+    }
+  });
+
+  test("deeply nested keys work", () => {
+    const result = parseQueryStyle("a.b.c.d=value");
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.value).toEqual({ a: { b: { c: { d: "value" } } } });
+    }
+  });
+
+  test("multiple nested keys are merged", () => {
+    const result = parseQueryStyle("foo.bar=1 foo.baz=2");
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.value).toEqual({ foo: { bar: 1, baz: 2 } });
+    }
+  });
+
+  test("bracketed keys with dots are treated as literal", () => {
+    const result = parseQueryStyle("[foo.bar]=value");
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.value).toEqual({ "foo.bar": "value" });
+    }
+  });
+
+  test("mixed nested and flat keys", () => {
+    const result = parseQueryStyle("foo.bar=nested flat=value");
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.value).toEqual({ foo: { bar: "nested" }, flat: "value" });
+    }
+  });
+
+  test("nested keys with type conversion", () => {
+    const result = parseQueryStyle(
+      "config.enabled=true config.count=42 config.name=test",
+    );
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.value).toEqual({
+        config: { enabled: true, count: 42, name: "test" },
+      });
+    }
+  });
+
+  test("overwriting nested value replaces object", () => {
+    // When foo.bar=1 then foo=2, foo becomes 2 (not an object)
+    const result = parseQueryStyle("foo.bar=1 foo=2");
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.value).toEqual({ foo: 2 });
+    }
+  });
+
+  test("overwriting flat value with nested creates object", () => {
+    // When foo=1 then foo.bar=2, foo becomes {bar: 2}
+    const result = parseQueryStyle("foo=1 foo.bar=2");
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.value).toEqual({ foo: { bar: 2 } });
+    }
+  });
+
+  test("bracketed key without dots", () => {
+    const result = parseQueryStyle("[simple]=value");
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.value).toEqual({ simple: "value" });
+    }
+  });
+
+  test("mixed bracketed and nested keys", () => {
+    const result = parseQueryStyle("[literal.key]=1 nested.key=2");
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.value).toEqual({
+        "literal.key": 1,
+        nested: { key: 2 },
+      });
+    }
+  });
+
+  test("empty string in nested path", () => {
+    // "foo..bar" splits to ["foo", "", "bar"]
+    const result = parseQueryStyle("foo..bar=value");
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.value).toEqual({ foo: { "": { bar: "value" } } });
+    }
+  });
+
+  test("single dot key", () => {
+    const result = parseQueryStyle(".=value");
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.value).toEqual({ "": { "": "value" } });
+    }
+  });
+});
+
+describe("parseQueryStyleArgs", () => {
+  test("parses pre-split CLI args with nested keys", () => {
+    // Simulates: tool foo.bar=value (shell splits into ["foo.bar=value"])
+    const result = parseQueryStyleArgs(["foo.bar=value"]);
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.value).toEqual({ foo: { bar: "value" } });
+    }
+  });
+
+  test("handles values with spaces (pre-split by shell)", () => {
+    // Simulates: tool path="foo bar" (shell gives ["path=foo bar"])
+    const result = parseQueryStyleArgs(["path=foo bar"]);
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.value).toEqual({ path: "foo bar" });
+    }
+  });
+
+  test("nested keys with spaces in value", () => {
+    // Simulates: tool config.message="hello world"
+    const result = parseQueryStyleArgs(["config.message=hello world"]);
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.value).toEqual({ config: { message: "hello world" } });
+    }
+  });
+
+  test("multiple nested args from CLI", () => {
+    const result = parseQueryStyleArgs([
+      "user.name=John",
+      "user.age=30",
+      "user.active=true",
+    ]);
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.value).toEqual({
+        user: { name: "John", age: 30, active: true },
+      });
+    }
+  });
+
+  test("bracketed literal key from CLI", () => {
+    const result = parseQueryStyleArgs(["[dotted.key]=value"]);
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.value).toEqual({ "dotted.key": "value" });
+    }
+  });
 });
 
 describe("parsePayload", () => {
@@ -150,6 +308,14 @@ describe("parsePayload", () => {
     expect(result.ok).toBe(true);
     if (result.ok) {
       expect(result.value).toEqual({ path: "." });
+    }
+  });
+
+  test("nested keys in query format via parsePayload", () => {
+    const result = parsePayload("foo.bar.baz=value");
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.value).toEqual({ foo: { bar: { baz: "value" } } });
     }
   });
 });
